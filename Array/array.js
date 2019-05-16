@@ -1,4 +1,5 @@
-import memory from './memory';
+const Memory = require('./memory');
+const memory = new Memory(); 
 
 class Array {
     constructor(){
@@ -7,9 +8,10 @@ class Array {
 
         // allocates memory per previosly set length
         this.ptr = memory.allocate(this.length);
+        this._capacity = 0;
     }
 
-    push(value) {
+    push(data) {
         // if the length of new data is longer than reserved memory capacity
         // the length of the memory block is incresed according to the Size ratio
         if (this.length >= this._capacity) {
@@ -17,7 +19,7 @@ class Array {
         }
 
         // set the value of the last block to contain the newly added value
-        memory.set(this.ptr + this.length, value);
+        memory.set(this.ptr + this.length, data);
         this.length++;
     }
 
@@ -37,6 +39,7 @@ class Array {
         
         //frees up our no-longer used, old memory block
         memory.free(oldPtr);
+        this._capacity = size;
     }
 
     get(index) {
@@ -58,12 +61,12 @@ class Array {
         }
 
 
-        const value = memory.get(this.ptr + this.length - 1);
+        const data = memory.get(this.ptr + this.length - 1);
         this.length--;
-        return value;
+        return data;
     }
 
-    insert(index, value) {
+    insert(index, data) {
         if (index < 0 || index >= this.length) {
             throw new Error('Index error');
         }
@@ -77,7 +80,7 @@ class Array {
         memory.copy(this.ptr + index + 1, this.ptr + index, this.length - index);
         
         // set our new data in new memory location
-        memory.set(this.ptr + index, value);
+        memory.set(this.ptr + index, data);
         this.length++;
     }
 
@@ -93,3 +96,5 @@ class Array {
 }
 
 Array.SIZE_RATION = 3;
+
+module.exports = Array;
